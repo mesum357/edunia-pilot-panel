@@ -1,4 +1,23 @@
-export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+// Get backend URL from environment variable
+const envBackendUrl = import.meta.env.VITE_BACKEND_URL;
+
+export const BACKEND_URL = envBackendUrl || (
+  import.meta.env.PROD 
+    ? (() => {
+        console.error('❌ VITE_BACKEND_URL is not set! Please set the environment variable in Render dashboard.');
+        return 'http://localhost:3000'; // Fallback
+      })()
+    : 'http://localhost:3000'
+);
+
+// Log the backend URL in development for debugging
+if (import.meta.env.DEV) {
+  console.log('🌐 Control Panel Backend URL:', BACKEND_URL);
+  if (!envBackendUrl) {
+    console.warn('⚠️ VITE_BACKEND_URL not set. Using default: http://localhost:3000');
+    console.warn('💡 Create a .env file in the Control Panel root with: VITE_BACKEND_URL=https://your-backend-url.onrender.com');
+  }
+}
 
 export async function apiGet<T>(path: string, params?: Record<string, string | number | undefined>): Promise<T> {
   const url = new URL(path.startsWith('http') ? path : `${BACKEND_URL}${path}`);
