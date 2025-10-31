@@ -5,13 +5,38 @@ import { RequestModal } from '@/components/shared/RequestModal';
 import { ImageModal } from '@/components/shared/ImageModal';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { Store, Hospital, GraduationCap, ShoppingCart, Clock } from 'lucide-react';
-import { mockSummary } from '@/lib/mockData';
+import { useEffect, useState } from 'react';
+import { apiGet } from '@/lib/api';
 import { useRequests } from '@/hooks/useRequests';
-import { useState } from 'react';
 import { PaymentRequest } from '@/types';
 
 export default function Dashboard() {
   const { requests, acceptRequest, rejectRequest, setSearchQuery } = useRequests();
+  const [stats, setStats] = useState({
+    totalShops: 0,
+    totalHospitals: 0,
+    totalInstitutes: 0,
+    totalMarketplaceProducts: 0,
+    pendingRequests: 0,
+  });
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await apiGet<any>('/api/admin/stats');
+        setStats({
+          totalShops: data?.entities?.shops?.total || 0,
+          totalHospitals: data?.entities?.hospitals?.total || 0,
+          totalInstitutes: data?.entities?.institutes?.total || 0,
+          totalMarketplaceProducts: data?.entities?.products?.total || 0,
+          pendingRequests: data?.payments?.pending || 0,
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    load();
+  }, []);
   const [selectedRequest, setSelectedRequest] = useState<PaymentRequest | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
@@ -57,33 +82,28 @@ export default function Dashboard() {
       <main className="flex-1 p-6 space-y-6">
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <SummaryCard
-            title="Total Shops"
-            value={mockSummary.totalShops}
-            icon={Store}
-            trend={{ value: 12, isPositive: true }}
-          />
+          <SummaryCard title="Total Shops" value={stats.totalShops} icon={Store} trend={{ value: 0, isPositive: true }} />
           <SummaryCard
             title="Total Hospitals"
-            value={mockSummary.totalHospitals}
+            value={stats.totalHospitals}
             icon={Hospital}
-            trend={{ value: 8, isPositive: true }}
+            trend={{ value: 0, isPositive: true }}
           />
           <SummaryCard
             title="Institutes"
-            value={mockSummary.totalInstitutes}
+            value={stats.totalInstitutes}
             icon={GraduationCap}
-            trend={{ value: 15, isPositive: true }}
+            trend={{ value: 0, isPositive: true }}
           />
           <SummaryCard
             title="Marketplace"
-            value={mockSummary.totalMarketplaceProducts}
+            value={stats.totalMarketplaceProducts}
             icon={ShoppingCart}
-            trend={{ value: 23, isPositive: true }}
+            trend={{ value: 0, isPositive: true }}
           />
           <SummaryCard
             title="Pending Requests"
-            value={mockSummary.pendingRequests}
+            value={stats.pendingRequests}
             icon={Clock}
           />
         </div>

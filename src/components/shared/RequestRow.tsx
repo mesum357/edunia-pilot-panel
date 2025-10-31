@@ -34,7 +34,14 @@ export function RequestRow({ request, onShowImage, onShowDetails, onAccept, onRe
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
               <h3 className="font-semibold text-foreground truncate">{request.resourceName}</h3>
-              <p className="text-sm text-muted-foreground truncate">{request.ownerName}</p>
+              <p className="text-sm text-muted-foreground truncate">
+                {request.ownerName}
+                {request.agentId ? (
+                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded bg-muted text-foreground text-xs border">
+                    Agent: {request.agentId}
+                  </span>
+                ) : null}
+              </p>
             </div>
             <Badge variant="outline" className={statusColors[request.status]}>
               {request.status}

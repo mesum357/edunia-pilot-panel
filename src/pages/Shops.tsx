@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { PaymentRequest } from '@/types';
 
 export default function Shops() {
-  const { requests, statusFilter, setStatusFilter, acceptRequest, rejectRequest, setSearchQuery } = useRequests('shop');
+  const { requests, statusFilter, setStatusFilter, acceptRequest, rejectRequest, setSearchQuery, page, pages, setPage } = useRequests('shop');
   const [selectedRequest, setSelectedRequest] = useState<PaymentRequest | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
@@ -59,6 +59,25 @@ export default function Shops() {
           statusFilter={statusFilter === 'all' ? undefined : statusFilter}
           onStatusFilterChange={setStatusFilter}
         />
+        <div className="flex items-center justify-between mt-4">
+          <span className="text-sm text-muted-foreground">Page {page} / {pages}</span>
+          <div className="flex gap-2">
+            <button
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+              onClick={() => setPage(Math.max(1, page - 1))}
+              disabled={page <= 1}
+            >
+              Previous
+            </button>
+            <button
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3"
+              onClick={() => setPage(Math.min(pages, page + 1))}
+              disabled={page >= pages}
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </main>
 
       <RequestModal

@@ -32,7 +32,7 @@ export function RequestModal({ request, open, onOpenChange, onAccept, onReject, 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             <span>Payment Request Details</span>
@@ -42,7 +42,7 @@ export function RequestModal({ request, open, onOpenChange, onAccept, onReject, 
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-6 flex-1 overflow-y-auto pr-1">
           {/* Owner Info */}
           <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
             <img
@@ -75,6 +75,16 @@ export function RequestModal({ request, open, onOpenChange, onAccept, onReject, 
                 {request.currency} {request.amount.toLocaleString()}
               </p>
             </div>
+
+            {request.agentId && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <User className="h-4 w-4" />
+                  <span className="text-sm font-medium">Agent ID</span>
+                </div>
+                <p className="text-foreground font-mono text-sm">{request.agentId}</p>
+              </div>
+            )}
 
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-muted-foreground">

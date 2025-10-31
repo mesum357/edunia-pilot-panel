@@ -26,6 +26,7 @@ export interface PaymentRequest {
   currency: string;
   status: RequestStatus;
   images: string[];
+  agentId?: string | null;
   notes?: string;
   createdAt: string;
   updatedAt: string;
