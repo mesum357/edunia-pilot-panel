@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: control-panel
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_BACKEND_URL
+        sync: false
+        # Set this to your backend URL in Render dashboard
+        # Example: https://your-backend.onrender.com
+
