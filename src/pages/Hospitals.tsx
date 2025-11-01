@@ -3,9 +3,12 @@ import { RequestList } from '@/components/shared/RequestList';
 import { RequestModal } from '@/components/shared/RequestModal';
 import { ImageModal } from '@/components/shared/ImageModal';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { HospitalManagementModal } from '@/components/shared/HospitalManagementModal';
 import { useRequests } from '@/hooks/useRequests';
 import { useState } from 'react';
 import { PaymentRequest } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Settings } from 'lucide-react';
 
 export default function Hospitals() {
   const { requests, statusFilter, setStatusFilter, acceptRequest, rejectRequest, setSearchQuery, page, pages, setPage } = useRequests('hospital');
@@ -13,6 +16,7 @@ export default function Hospitals() {
   const [modalOpen, setModalOpen] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [currentImages, setCurrentImages] = useState<string[]>([]);
+  const [hospitalManagementOpen, setHospitalManagementOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     type: 'accept' | 'reject';
@@ -50,6 +54,12 @@ export default function Hospitals() {
       <Header title="Hospital Payment Requests" onSearch={setSearchQuery} />
       
       <main className="flex-1 p-6">
+        <div className="flex justify-end mb-4">
+          <Button onClick={() => setHospitalManagementOpen(true)} className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Hospital Management
+          </Button>
+        </div>
         <RequestList
           requests={requests}
           onShowImage={handleShowImage}
@@ -105,6 +115,8 @@ export default function Hospitals() {
         requireReason={confirmDialog.type === 'reject'}
         onConfirm={handleConfirm}
       />
+
+      <HospitalManagementModal open={hospitalManagementOpen} onOpenChange={setHospitalManagementOpen} />
     </div>
   );
 }

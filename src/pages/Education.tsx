@@ -3,9 +3,12 @@ import { RequestList } from '@/components/shared/RequestList';
 import { RequestModal } from '@/components/shared/RequestModal';
 import { ImageModal } from '@/components/shared/ImageModal';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { InstituteManagementModal } from '@/components/shared/InstituteManagementModal';
 import { useRequests } from '@/hooks/useRequests';
 import { useState } from 'react';
 import { PaymentRequest } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Settings } from 'lucide-react';
 
 export default function Education() {
   const { requests, statusFilter, setStatusFilter, acceptRequest, rejectRequest, setSearchQuery, page, pages, setPage } = useRequests('education');
@@ -13,6 +16,7 @@ export default function Education() {
   const [modalOpen, setModalOpen] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [currentImages, setCurrentImages] = useState<string[]>([]);
+  const [educationManagementOpen, setEducationManagementOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     type: 'accept' | 'reject';
@@ -50,6 +54,12 @@ export default function Education() {
       <Header title="Education Payment Requests" onSearch={setSearchQuery} />
       
       <main className="flex-1 p-6">
+        <div className="flex justify-end mb-4">
+          <Button onClick={() => setEducationManagementOpen(true)} className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Education Management
+          </Button>
+        </div>
         <RequestList
           requests={requests}
           onShowImage={handleShowImage}
@@ -105,6 +115,8 @@ export default function Education() {
         requireReason={confirmDialog.type === 'reject'}
         onConfirm={handleConfirm}
       />
+
+      <InstituteManagementModal open={educationManagementOpen} onOpenChange={setEducationManagementOpen} />
     </div>
   );
 }
