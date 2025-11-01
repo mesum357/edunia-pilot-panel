@@ -63,6 +63,17 @@ export async function apiDelete<T>(path: string): Promise<T> {
   return res.json();
 }
 
+export async function apiPost<T>(path: string, body?: unknown): Promise<T> {
+  const url = path.startsWith('http') ? path : `${BACKEND_URL}${path}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) throw new Error(`POST ${url} failed: ${res.status}`);
+  return res.json();
+}
+
 
 
 

@@ -3,9 +3,12 @@ import { RequestList } from '@/components/shared/RequestList';
 import { RequestModal } from '@/components/shared/RequestModal';
 import { ImageModal } from '@/components/shared/ImageModal';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { ShopManagementModal } from '@/components/shared/ShopManagementModal';
 import { useRequests } from '@/hooks/useRequests';
 import { useState } from 'react';
 import { PaymentRequest } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Settings } from 'lucide-react';
 
 export default function Shops() {
   const { requests, statusFilter, setStatusFilter, acceptRequest, rejectRequest, setSearchQuery, page, pages, setPage } = useRequests('shop');
@@ -13,6 +16,7 @@ export default function Shops() {
   const [modalOpen, setModalOpen] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [currentImages, setCurrentImages] = useState<string[]>([]);
+  const [shopManagementOpen, setShopManagementOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     type: 'accept' | 'reject';
@@ -50,6 +54,12 @@ export default function Shops() {
       <Header title="Shop Payment Requests" onSearch={setSearchQuery} />
       
       <main className="flex-1 p-6">
+        <div className="flex justify-end mb-4">
+          <Button onClick={() => setShopManagementOpen(true)} className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Shop Management
+          </Button>
+        </div>
         <RequestList
           requests={requests}
           onShowImage={handleShowImage}
@@ -105,6 +115,8 @@ export default function Shops() {
         requireReason={confirmDialog.type === 'reject'}
         onConfirm={handleConfirm}
       />
+
+      <ShopManagementModal open={shopManagementOpen} onOpenChange={setShopManagementOpen} />
     </div>
   );
 }

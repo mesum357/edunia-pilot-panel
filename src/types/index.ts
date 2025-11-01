@@ -40,3 +40,24 @@ export interface SummaryData {
   totalMarketplaceProducts: number;
   pendingRequests: number;
 }
+
+export interface Shop {
+  _id: string;
+  shopName: string;
+  city: string;
+  shopType: 'Product Seller' | 'Service Provider';
+  shopDescription?: string;
+  categories?: string[];
+  shopLogo?: string;
+  shopBanner?: string;
+  approvalStatus: 'pending' | 'approved' | 'rejected';
+  isFrozen?: boolean;
+  owner?: {
+    _id: string;
+    username?: string;
+    email?: string;
+    fullName?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
