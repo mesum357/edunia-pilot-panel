@@ -53,6 +53,16 @@ export function toAbsoluteUrl(possiblyRelativePath?: string | null): string | nu
   return `${BACKEND_URL}/${possiblyRelativePath}`;
 }
 
+export async function apiDelete<T>(path: string): Promise<T> {
+  const url = path.startsWith('http') ? path : `${BACKEND_URL}${path}`;
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error(`DELETE ${url} failed: ${res.status}`);
+  return res.json();
+}
+
 
 
 

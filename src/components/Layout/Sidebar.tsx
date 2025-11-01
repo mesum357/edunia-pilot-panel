@@ -5,6 +5,7 @@ import {
   Hospital, 
   GraduationCap, 
   ShoppingCart,
+  Users as UsersIcon,
   Menu,
   X
 } from 'lucide-react';
@@ -24,6 +25,7 @@ interface SidebarProps {
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/users', icon: UsersIcon, label: 'Users' },
   { to: '/shops', icon: Store, label: 'Shops', count: 'shops' },
   { to: '/hospitals', icon: Hospital, label: 'Hospitals', count: 'hospitals' },
   { to: '/education', icon: GraduationCap, label: 'Education', count: 'education' },

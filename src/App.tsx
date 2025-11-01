@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Sidebar } from "./components/Layout/Sidebar";
 import { mockSummary } from "./lib/mockData";
 import Dashboard from "./pages/Dashboard";
+import Users from "./pages/Users";
 import Shops from "./pages/Shops";
 import Hospitals from "./pages/Hospitals";
 import Education from "./pages/Education";
@@ -31,6 +32,7 @@ const App = () => (
           <div className="flex-1 lg:ml-64">
             <Routes>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/users" element={<Users />} />
               <Route path="/shops" element={<Shops />} />
               <Route path="/hospitals" element={<Hospitals />} />
               <Route path="/education" element={<Education />} />
