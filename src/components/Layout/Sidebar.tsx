@@ -6,6 +6,7 @@ import {
   GraduationCap, 
   ShoppingCart,
   Users as UsersIcon,
+  CreditCard,
   Menu,
   X
 } from 'lucide-react';
@@ -30,6 +31,7 @@ const navItems = [
   { to: '/hospitals', icon: Hospital, label: 'Hospitals', count: 'hospitals' },
   { to: '/education', icon: GraduationCap, label: 'Education', count: 'education' },
   { to: '/marketplace', icon: ShoppingCart, label: 'Marketplace', count: 'marketplace' },
+  { to: '/payment-settings', icon: CreditCard, label: 'Payment Settings' },
 ];
 
 export function Sidebar({ counts }: SidebarProps) {
