@@ -1,7 +1,7 @@
 import { PaymentRequest } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, X, Image as ImageIcon } from 'lucide-react';
+import { Check, X, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface RequestRowProps {
@@ -10,6 +10,7 @@ interface RequestRowProps {
   onShowDetails: (request: PaymentRequest) => void;
   onAccept: (id: string) => void;
   onReject: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
 const statusColors = {
@@ -18,7 +19,7 @@ const statusColors = {
   rejected: 'bg-destructive/10 text-destructive border-destructive/20',
 };
 
-export function RequestRow({ request, onShowImage, onShowDetails, onAccept, onReject }: RequestRowProps) {
+export function RequestRow({ request, onShowImage, onShowDetails, onAccept, onReject, onDelete }: RequestRowProps) {
   return (
     <div className="p-4 hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => onShowDetails(request)}>
       <div className="flex items-center gap-4">
@@ -57,44 +58,60 @@ export function RequestRow({ request, onShowImage, onShowDetails, onAccept, onRe
         </div>
 
         {/* Actions */}
-        {request.status === 'pending' && (
-          <div className="flex items-center gap-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+          {request.status === 'pending' && (
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onShowImage(request.images);
+                }}
+              >
+                <ImageIcon className="h-4 w-4 mr-2" />
+                Picture
+              </Button>
+              <Button
+                size="sm"
+                variant="default"
+                className="bg-accent hover:bg-accent/90"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAccept(request.id);
+                }}
+              >
+                <Check className="h-4 w-4 mr-2" />
+                Accept
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onReject(request.id);
+                }}
+              >
+                <X className="h-4 w-4 mr-2" />
+                Reject
+              </Button>
+            </>
+          )}
+          {onDelete && (
             <Button
               size="sm"
               variant="outline"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
               onClick={(e) => {
                 e.stopPropagation();
-                onShowImage(request.images);
+                onDelete(request.id);
               }}
             >
-              <ImageIcon className="h-4 w-4 mr-2" />
-              Picture
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
             </Button>
-            <Button
-              size="sm"
-              variant="default"
-              className="bg-accent hover:bg-accent/90"
-              onClick={(e) => {
-                e.stopPropagation();
-                onAccept(request.id);
-              }}
-            >
-              <Check className="h-4 w-4 mr-2" />
-              Accept
-            </Button>
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={(e) => {
-                e.stopPropagation();
-                onReject(request.id);
-              }}
-            >
-              <X className="h-4 w-4 mr-2" />
-              Reject
-            </Button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

@@ -47,11 +47,18 @@ export function useRequests(type?: RequestType) {
           // Normalize screenshot URL: support Cloudinary URLs, absolute URLs, and local uploads
           let img: string | null = null;
           if (pr.screenshotFile) {
-            if (typeof pr.screenshotFile === 'string' && (pr.screenshotFile.startsWith('http://') || pr.screenshotFile.startsWith('https://'))) {
-              img = pr.screenshotFile;
-            } else if (typeof pr.screenshotFile === 'string') {
-              const path = pr.screenshotFile.includes('/') ? pr.screenshotFile : `/uploads/${pr.screenshotFile}`;
-              img = toAbsoluteUrl(path) as string;
+            if (typeof pr.screenshotFile === 'string') {
+              // Check if it's already a Cloudinary URL or absolute URL
+              if (pr.screenshotFile.startsWith('http://') || pr.screenshotFile.startsWith('https://')) {
+                img = pr.screenshotFile;
+              } else if (pr.screenshotFile.includes('res.cloudinary.com') || pr.screenshotFile.includes('cloudinary.com')) {
+                // Handle Cloudinary URLs without protocol (shouldn't happen, but just in case)
+                img = pr.screenshotFile.startsWith('//') ? `https:${pr.screenshotFile}` : `https://${pr.screenshotFile}`;
+              } else {
+                // Local file - fallback for backward compatibility with old uploads
+                const path = pr.screenshotFile.includes('/') ? pr.screenshotFile : `/uploads/${pr.screenshotFile}`;
+                img = toAbsoluteUrl(path) as string;
+              }
             }
           }
           const typeMap: Record<string, RequestType> = {
@@ -177,6 +184,17 @@ export function useRequests(type?: RequestType) {
     }
   };
 
+  const deleteRequest = async (id: string) => {
+    try {
+      await apiDelete(`/api/admin/payment-request/${id}`);
+      setRequests((prev) => prev.filter((req) => req.id !== id));
+      toast.success('Payment request deleted');
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to delete payment request');
+    }
+  };
+
   return {
     requests: filteredRequests,
     allRequests: requests,
@@ -190,5 +208,6 @@ export function useRequests(type?: RequestType) {
     setSearchQuery,
     acceptRequest,
     rejectRequest,
+    deleteRequest,
   };
 }

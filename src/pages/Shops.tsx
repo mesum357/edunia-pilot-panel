@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Settings } from 'lucide-react';
 
 export default function Shops() {
-  const { requests, statusFilter, setStatusFilter, acceptRequest, rejectRequest, setSearchQuery, page, pages, setPage } = useRequests('shop');
+  const { requests, statusFilter, setStatusFilter, acceptRequest, rejectRequest, deleteRequest, setSearchQuery, page, pages, setPage } = useRequests('shop');
   const [selectedRequest, setSelectedRequest] = useState<PaymentRequest | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
@@ -19,7 +19,7 @@ export default function Shops() {
   const [shopManagementOpen, setShopManagementOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
-    type: 'accept' | 'reject';
+    type: 'accept' | 'reject' | 'delete';
     requestId: string;
   }>({ open: false, type: 'accept', requestId: '' });
 
@@ -41,11 +41,17 @@ export default function Shops() {
     setConfirmDialog({ open: true, type: 'reject', requestId: id });
   };
 
+  const handleDelete = (id: string) => {
+    setConfirmDialog({ open: true, type: 'delete', requestId: id });
+  };
+
   const handleConfirm = (reason?: string) => {
     if (confirmDialog.type === 'accept') {
       acceptRequest(confirmDialog.requestId);
-    } else {
+    } else if (confirmDialog.type === 'reject') {
       rejectRequest(confirmDialog.requestId, reason);
+    } else if (confirmDialog.type === 'delete') {
+      deleteRequest(confirmDialog.requestId);
     }
   };
 
@@ -66,6 +72,7 @@ export default function Shops() {
           onShowDetails={handleShowDetails}
           onAccept={handleAccept}
           onReject={handleReject}
+          onDelete={handleDelete}
           statusFilter={statusFilter === 'all' ? undefined : statusFilter}
           onStatusFilterChange={setStatusFilter}
         />
@@ -104,14 +111,16 @@ export default function Shops() {
       <ConfirmDialog
         open={confirmDialog.open}
         onOpenChange={(open) => setConfirmDialog({ ...confirmDialog, open })}
-        title={confirmDialog.type === 'accept' ? 'Accept Request' : 'Reject Request'}
+        title={confirmDialog.type === 'accept' ? 'Accept Request' : confirmDialog.type === 'reject' ? 'Reject Request' : 'Delete Request'}
         description={
           confirmDialog.type === 'accept'
             ? 'Are you sure you want to accept this payment request? This action will mark it as approved.'
-            : 'Are you sure you want to reject this payment request?'
+            : confirmDialog.type === 'reject'
+            ? 'Are you sure you want to reject this payment request?'
+            : 'Are you sure you want to delete this payment request? This action cannot be undone.'
         }
-        confirmText={confirmDialog.type === 'accept' ? 'Accept' : 'Reject'}
-        destructive={confirmDialog.type === 'reject'}
+        confirmText={confirmDialog.type === 'accept' ? 'Accept' : confirmDialog.type === 'reject' ? 'Reject' : 'Delete'}
+        destructive={confirmDialog.type === 'reject' || confirmDialog.type === 'delete'}
         requireReason={confirmDialog.type === 'reject'}
         onConfirm={handleConfirm}
       />

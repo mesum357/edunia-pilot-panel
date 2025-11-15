@@ -10,6 +10,7 @@ interface RequestListProps {
   onShowDetails: (request: PaymentRequest) => void;
   onAccept: (id: string) => void;
   onReject: (id: string, reason?: string) => void;
+  onDelete?: (id: string) => void;
   statusFilter?: RequestStatus;
   onStatusFilterChange?: (status: RequestStatus | 'all') => void;
 }
@@ -20,6 +21,7 @@ export function RequestList({
   onShowDetails,
   onAccept,
   onReject,
+  onDelete,
   statusFilter,
   onStatusFilterChange,
 }: RequestListProps) {
@@ -63,6 +65,7 @@ export function RequestList({
                 onShowDetails={onShowDetails}
                 onAccept={onAccept}
                 onReject={onReject}
+                onDelete={onDelete}
               />
             ))
           )}
