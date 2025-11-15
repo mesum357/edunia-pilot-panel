@@ -1,5 +1,5 @@
 import { PaymentRequest } from '@/types';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, User, FileText, DollarSign } from 'lucide-react';
@@ -40,6 +40,9 @@ export function RequestModal({ request, open, onOpenChange, onAccept, onReject, 
               {request.status}
             </Badge>
           </DialogTitle>
+          <DialogDescription>
+            View and manage payment request details
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 flex-1 overflow-y-auto pr-1">

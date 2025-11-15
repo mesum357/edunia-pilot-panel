@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { PaymentRequest, RequestStatus, RequestType } from '@/types';
 import { toast } from 'sonner';
-import { apiGet, apiPut, toAbsoluteUrl } from '@/lib/api';
+import { apiGet, apiPut, apiDelete, toAbsoluteUrl } from '@/lib/api';
 
 export function useRequests(type?: RequestType) {
   const [requests, setRequests] = useState<PaymentRequest[]>([]);
