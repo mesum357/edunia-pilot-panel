@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, User, FileText, DollarSign } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { toAbsoluteUrl } from '@/lib/api';
 
 interface RequestModalProps {
   request: PaymentRequest | null;
@@ -29,6 +30,27 @@ const typeLabels = {
 
 export function RequestModal({ request, open, onOpenChange, onAccept, onReject, onShowImage }: RequestModalProps) {
   if (!request) return null;
+
+  // Normalize image URLs to ensure Cloudinary URLs are used
+  const normalizeImageUrl = (url: string): string => {
+    if (!url) return '';
+    
+    // If already a Cloudinary URL or absolute URL, use it directly
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    
+    // If it contains Cloudinary domain but missing protocol
+    if (url.includes('res.cloudinary.com') || url.includes('cloudinary.com')) {
+      return url.startsWith('//') ? `https:${url}` : `https://${url}`;
+    }
+    
+    // For local files, convert to absolute URL (fallback for old uploads)
+    const path = url.includes('/') ? url : `/uploads/${url}`;
+    return toAbsoluteUrl(path) || url;
+  };
+
+  const normalizedImages = request.images.map(normalizeImageUrl).filter(Boolean);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -117,18 +139,34 @@ export function RequestModal({ request, open, onOpenChange, onAccept, onReject, 
           )}
 
           {/* Images */}
-          {request.images.length > 0 && (
+          {normalizedImages.length > 0 && (
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-muted-foreground">Attached Documents</h4>
               <div className="grid grid-cols-3 gap-2">
-                {request.images.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image}
-                    alt={`Document ${index + 1}`}
-                    className="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={() => onShowImage(request.images)}
-                  />
+                {normalizedImages.map((image, index) => (
+                  <div key={index} className="relative w-full h-24 rounded-lg overflow-hidden bg-muted">
+                    <img
+                      src={image}
+                      alt={`Document ${index + 1}`}
+                      className="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => onShowImage(normalizedImages)}
+                      onError={(e) => {
+                        // If image fails to load, hide it and show placeholder
+                        const target = e.target as HTMLImageElement;
+                        const container = target.parentElement;
+                        if (container) {
+                          target.style.display = 'none';
+                          if (!container.querySelector('.image-placeholder')) {
+                            const placeholder = document.createElement('div');
+                            placeholder.className = 'image-placeholder w-full h-full flex items-center justify-center text-xs text-muted-foreground';
+                            placeholder.textContent = 'Image unavailable';
+                            container.appendChild(placeholder);
+                          }
+                        }
+                        console.warn('Image failed to load:', target.src);
+                      }}
+                    />
+                  </div>
                 ))}
               </div>
             </div>

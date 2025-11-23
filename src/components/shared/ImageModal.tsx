@@ -2,6 +2,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 import { useState } from 'react';
+import { toAbsoluteUrl } from '@/lib/api';
 
 interface ImageModalProps {
   images: string[];
@@ -13,13 +14,34 @@ export function ImageModal({ images, open, onOpenChange }: ImageModalProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [zoom, setZoom] = useState(1);
 
+  // Normalize image URLs to ensure Cloudinary URLs are used
+  const normalizeImageUrl = (url: string): string => {
+    if (!url) return '';
+    
+    // If already a Cloudinary URL or absolute URL, use it directly
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    
+    // If it contains Cloudinary domain but missing protocol
+    if (url.includes('res.cloudinary.com') || url.includes('cloudinary.com')) {
+      return url.startsWith('//') ? `https:${url}` : `https://${url}`;
+    }
+    
+    // For local files, convert to absolute URL (fallback for old uploads)
+    const path = url.includes('/') ? url : `/uploads/${url}`;
+    return toAbsoluteUrl(path) || url;
+  };
+
+  const normalizedImages = images.map(normalizeImageUrl).filter(Boolean);
+
   const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : normalizedImages.length - 1));
     setZoom(1);
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+    setCurrentIndex((prev) => (prev < normalizedImages.length - 1 ? prev + 1 : 0));
     setZoom(1);
   };
 
@@ -38,7 +60,7 @@ export function ImageModal({ images, open, onOpenChange }: ImageModalProps) {
           {/* Header */}
           <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 to-transparent">
             <span className="text-white text-sm">
-              {currentIndex + 1} / {images.length}
+              {currentIndex + 1} / {normalizedImages.length}
             </span>
             <div className="flex items-center gap-2">
               <Button
@@ -70,16 +92,27 @@ export function ImageModal({ images, open, onOpenChange }: ImageModalProps) {
 
           {/* Image */}
           <div className="flex-1 flex items-center justify-center overflow-hidden p-4">
-            <img
-              src={images[currentIndex]}
-              alt={`Document ${currentIndex + 1}`}
-              className="max-w-full max-h-full object-contain transition-transform duration-200"
-              style={{ transform: `scale(${zoom})` }}
-            />
+            {normalizedImages[currentIndex] ? (
+              <img
+                src={normalizedImages[currentIndex]}
+                alt={`Document ${currentIndex + 1}`}
+                className="max-w-full max-h-full object-contain transition-transform duration-200"
+                style={{ transform: `scale(${zoom})` }}
+                onError={(e) => {
+                  // If image fails to load, log error
+                  const target = e.target as HTMLImageElement;
+                  console.error('Failed to load image:', target.src);
+                }}
+              />
+            ) : (
+              <div className="text-white text-center">
+                <p>Image not available</p>
+              </div>
+            )}
           </div>
 
           {/* Navigation */}
-          {images.length > 1 && (
+          {normalizedImages.length > 1 && (
             <>
               <Button
                 size="icon"
@@ -101,10 +134,10 @@ export function ImageModal({ images, open, onOpenChange }: ImageModalProps) {
           )}
 
           {/* Thumbnails */}
-          {images.length > 1 && (
+          {normalizedImages.length > 1 && (
             <div className="absolute bottom-0 left-0 right-0 z-10 p-4 bg-gradient-to-t from-black/80 to-transparent">
               <div className="flex gap-2 justify-center">
-                {images.map((image, index) => (
+                {normalizedImages.map((image, index) => (
                   <button
                     key={index}
                     onClick={() => {
@@ -115,7 +148,16 @@ export function ImageModal({ images, open, onOpenChange }: ImageModalProps) {
                       index === currentIndex ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'
                     }`}
                   >
-                    <img src={image} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
+                    <img 
+                      src={image} 
+                      alt={`Thumbnail ${index + 1}`} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // If thumbnail fails to load, hide it
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                      }}
+                    />
                   </button>
                 ))}
               </div>
