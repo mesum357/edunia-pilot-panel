@@ -30,6 +30,7 @@ interface Product {
   price: number;
   category: string;
   condition: string;
+  country?: string;
   city: string;
   status: 'active' | 'sold' | 'expired';
   approvalStatus: 'pending' | 'approved' | 'rejected';
@@ -223,7 +224,7 @@ export function ProductManagementModal({ open, onOpenChange }: ProductManagement
                               <span className="font-medium">Condition:</span> {product.condition}
                             </p>
                             <p>
-                              <span className="font-medium">City:</span> {product.city}
+                              <span className="font-medium">Location:</span> {product.city}{product.country && product.country !== 'Pakistan' ? `, ${product.country}` : ''}
                             </p>
                             {product.owner && (
                               <p>

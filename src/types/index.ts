@@ -44,6 +44,7 @@ export interface SummaryData {
 export interface Shop {
   _id: string;
   shopName: string;
+  country?: string;
   city: string;
   shopType: 'Product Seller' | 'Service Provider';
   shopDescription?: string;

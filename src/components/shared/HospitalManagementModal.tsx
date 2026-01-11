@@ -28,6 +28,7 @@ interface Hospital {
   _id: string;
   name: string;
   type: string;
+  country?: string;
   city: string;
   province?: string;
   specialization?: string;
@@ -211,8 +212,9 @@ export function HospitalManagementModal({ open, onOpenChange }: HospitalManageme
                               <span className="font-medium">Type:</span> {hospital.type}
                             </p>
                             <p>
-                              <span className="font-medium">City:</span> {hospital.city}
+                              <span className="font-medium">Location:</span> {hospital.city}
                               {hospital.province && `, ${hospital.province}`}
+                              {hospital.country && hospital.country !== 'Pakistan' && `, ${hospital.country}`}
                             </p>
                             {hospital.specialization && (
                               <p>

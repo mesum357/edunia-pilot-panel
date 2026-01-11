@@ -189,7 +189,7 @@ export function ShopManagementModal({ open, onOpenChange }: ShopManagementModalP
                           </div>
                           <div className="text-sm text-muted-foreground space-y-1">
                             <p>
-                              <span className="font-medium">City:</span> {shop.city}
+                              <span className="font-medium">Location:</span> {shop.city}{shop.country && shop.country !== 'Pakistan' ? `, ${shop.country}` : ''}
                             </p>
                             <p>
                               <span className="font-medium">Type:</span> {shop.shopType}

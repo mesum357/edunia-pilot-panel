@@ -29,6 +29,7 @@ interface Institute {
   name: string;
   type: string;
   domain: 'education' | 'healthcare';
+  country?: string;
   city: string;
   province?: string;
   specialization?: string;
@@ -217,8 +218,9 @@ export function InstituteManagementModal({ open, onOpenChange }: InstituteManage
                               <span className="font-medium">Type:</span> {institute.type}
                             </p>
                             <p>
-                              <span className="font-medium">City:</span> {institute.city}
+                              <span className="font-medium">Location:</span> {institute.city}
                               {institute.province && `, ${institute.province}`}
+                              {institute.country && institute.country !== 'Pakistan' && `, ${institute.country}`}
                             </p>
                             {institute.specialization && (
                               <p>
